@@ -1,0 +1,14 @@
+{%extends 'main.html'%}
+
+{% block content %}
+
+<div>
+    <form method="POST" action="">
+        <!--token is send along with every request, and it make sure that user do not try to do anything malicious and mess with form input-->
+        {%csrf_token%} <!--cross site reference forgery-->
+        {{form.as_p}} <!--Wraps para tag around every input-->
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+{% endblock content %}
