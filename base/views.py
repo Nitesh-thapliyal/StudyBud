@@ -1,5 +1,7 @@
 from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required  # to restrict the pages
 from django.db.models import Q # it helps to provide the funcitonality of or and in our code
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -15,6 +17,9 @@ from .forms import RoomForm
 
 
 def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+        
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -70,6 +75,8 @@ def room(request,pk):
     context={'room':room}
     return render(request, 'base/room.html', context)
 
+#decorator: now if the credentials are not matched then the user will be redirected to login page
+@login_required(login_url='login')
 def createRoom(request):
     form = RoomForm()
     if request.method == 'POST':
@@ -83,9 +90,15 @@ def createRoom(request):
     return render(request, 'base/room_form.html', context)
 
 #for editing the room
+@login_required(login_url='login')
 def updateRoom(request,pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room) # so that room value are already filled
+
+    #this will allow only the room owner to edit the room
+    if request.user != room.host:
+        return HttpResponse('Access Denied!!')
+
 
     # processing the data:
     if request.method == 'POST':
@@ -98,8 +111,14 @@ def updateRoom(request,pk):
     return render(request, 'base/room_form.html', context)
 
 # Deleting the item
+@login_required(login_url='login')
 def deleteRoom(request, pk):
     room = Room.objects.get(id=pk)
+
+    #this will allow only the room owner to edit the room
+    if request.user != room.host:
+        return HttpResponse('Access Denied!!')
+
     if request.method == 'POST':
         room.delete()
         return redirect('home')
