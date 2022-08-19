@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required  # to restrict the pag
 from django.db.models import Q # it helps to provide the funcitonality of or and in our code
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from .models import Room,Topic
 from .forms import RoomForm
 # Create your views here.
@@ -17,9 +18,10 @@ from .forms import RoomForm
 
 
 def loginPage(request):
+    page='login'
     if request.user.is_authenticated:
         return redirect('home')
-        
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -38,7 +40,7 @@ def loginPage(request):
         else:
             messages.error(request, 'Username OR password does not exist')
 
-    context = {}
+    context = {'page': page}
     return render(request, 'base/login_register.html',context)
 
 
@@ -46,6 +48,10 @@ def logoutUser(request):
     logout(request)
     return redirect('home')
 
+
+def registerPage(request):
+    form = UserCreationForm()
+    return render(request, 'base/login_register.html', {'form': form})
 
 def home(request):
     #search functionality
