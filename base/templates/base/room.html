@@ -18,10 +18,13 @@
     {%endfor%}
 </div>
 
+{%if request.user.is_authenticated%} <!--Now message section will be only visible when user is logged in-->
 <div class="comment-form">
     <form mehtod="POST" action="">
         {%csrf_token%}
         <input type="text" name="body" placeholder="Write your message here...">
     </form>
 </div>
+{%endif%}
+
 {%endblock content%}
