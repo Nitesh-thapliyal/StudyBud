@@ -89,8 +89,10 @@ def room(request,pk):
     #         room=i
     # for being more specific after cliking the bakend develeopment, bakend development must open
 
+
     room = Room.objects.get(id=pk)
-    context={'room':room}
+    room_messages = room.message_set.all().order_by('-created') #-created means descending order
+    context={'room':room, 'room_messages': room_messages}
     return render(request, 'base/room.html', context)
 
 #decorator: now if the credentials are not matched then the user will be redirected to login page
